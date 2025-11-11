@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'resident_screen.dart';
-import 'business_owner_screen.dart';
+import 'business_owner_screen.dart'; // import sahi file path se
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -8,7 +8,6 @@ class RoleSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // AppBar with bold, centered, white title and search box
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
@@ -43,8 +42,6 @@ class RoleSelectionScreen extends StatelessWidget {
           ),
         ],
       ),
-
-      // Body with background image and two options
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -85,7 +82,6 @@ class RoleSelectionScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
               // Business Owner box
               GestureDetector(
                 onTap: () {
