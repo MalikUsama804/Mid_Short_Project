@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class ResidentScreen extends StatelessWidget {
@@ -7,113 +8,175 @@ class ResidentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Resident Section'),
-        backgroundColor: Colors.blueAccent,
-        centerTitle: true,
-      ),
-      body: Container(
-        // Background image
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/my.jpg'), // change your image
-            fit: BoxFit.cover,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF2ECC71),
+                Color(0xFF27AE60),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 12,
+                offset: Offset(0, 6),
+              )
+            ],
           ),
         ),
-        child: Row(
+
+        toolbarHeight: 90,
+
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            // Left side panel / design area
-            Container(
-              width: 80, // thoda wide panel
-              margin: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.blueAccent.withOpacity(0.2), // light transparent shade
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: const Center(
-                child: RotatedBox(
-                  quarterTurns: 3,
-                  child: Text(
-                    'Resident Area',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+
+            // 🔙 BACK BUTTON (Perfect LEFT)
+            InkWell(
+              onTap: () => Navigator.pop(context),
+              borderRadius: BorderRadius.circular(50),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.25),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
             ),
 
-            // Main content
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Center welcome text
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: Text(
-                      'Welcome Resident!\nThis is your dashboard (temporary view).',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // white + bold
-                        shadows: [
-                          Shadow(
-                            color: Colors.black45,
-                            offset: Offset(1, 1),
-                            blurRadius: 3,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
+            const SizedBox(width: 15),
 
-                  // Options: Report, Updates, Business
-                  Column(
-                    children: [
-                      _optionBox(context, 'Report'),
-                      const SizedBox(height: 20),
-                      _optionBox(context, 'Updates'),
-                      const SizedBox(height: 20),
-                      _optionBox(context, 'Business'),
-                    ],
+            // TEXT
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  "Welcome Back 👋",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w400,
                   ),
-                ],
-              ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  'Resident Dashboard',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+
+            const Spacer(),
+
+            // RIGHT SIDE ICONS
+            Row(
+              children: [
+                Icon(Icons.notifications_active_rounded,
+                    color: Colors.white, size: 26),
+                const SizedBox(width: 14),
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.white,
+                  child: Icon(Icons.person, color: Colors.green, size: 26),
+                ),
+              ],
             ),
           ],
         ),
       ),
+
+
+
+
+      body: Stack(
+        children: [
+          // Background Image
+          SizedBox(
+            width: double.infinity,
+            height: double.infinity,
+            child: Image.network(
+              'https://images.unsplash.com/photo-1507537297725-24a1c029d3ca?auto=format&fit=crop&w=800&q=80',
+              fit: BoxFit.cover,
+            ),
+          ),
+          // Blur Effect
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0),
+              ),
+            ),
+          ),
+          // List
+          ListView(
+            padding: const EdgeInsets.all(12),
+            children: [
+              functionalityTile(title: 'Profile Management', icon: Icons.man_3_rounded, onTap: () {}),
+              functionalityTile(title: 'Complaints', icon: Icons.report_rounded, onTap: () {}),
+              functionalityTile(title: 'Announcements', icon: Icons.announcement_rounded, onTap: () {}),
+              functionalityTile(title: 'Parking Management', icon: Icons.local_parking_rounded, onTap: () {}),
+              functionalityTile(title: 'Business', icon: Icons.business_rounded, onTap: () {}),
+
+            ],
+          ),
+        ],
+      ),
     );
   }
 
-  // Widget for option box
-  Widget _optionBox(BuildContext context, String title) {
-    return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title tapped (temporary action)')),
-        );
-      },
-      child: Container(
-        width: 250,
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.lightBlue.shade100,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        alignment: Alignment.center,
-        child: Text(
+  Widget functionalityTile({
+    required String title,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white70,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 4,
+            offset: Offset(2, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.green, size: 30),
+        title: Text(
           title,
           style: const TextStyle(
-            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            fontSize: 18,
           ),
         ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 20),
+        onTap: onTap,
       ),
     );
   }
