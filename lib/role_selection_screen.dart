@@ -27,7 +27,7 @@ class RoleSelectionScreen extends StatelessWidget {
 
       body: Stack(
         children: [
-          /// 🌆 NEW PREMIUM BLURRED BACKGROUND IMAGE
+          /// 🌆 BACKGROUND IMAGE
           SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -37,7 +37,7 @@ class RoleSelectionScreen extends StatelessWidget {
             ),
           ),
 
-          /// DARK GRADIENT OVERLAY → mobile app feel
+          /// DARK GRADIENT OVERLAY
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -68,9 +68,8 @@ class RoleSelectionScreen extends StatelessWidget {
 
                 const SizedBox(height: 45),
 
-                /// RESIDENT BUTTON
-                _buildRoleButton(
-                  context,
+                // <-- USE HoverRoleButton INSTEAD OF OLD _buildRoleButton -->
+                HoverRoleButton(
                   title: "Resident",
                   icon: Icons.person_rounded,
                   screen: const ResidentScreen(),
@@ -78,9 +77,7 @@ class RoleSelectionScreen extends StatelessWidget {
 
                 const SizedBox(height: 25),
 
-                /// BUSINESS OWNER
-                _buildRoleButton(
-                  context,
+                HoverRoleButton(
                   title: "Business Owner",
                   icon: Icons.store_rounded,
                   screen: const BusinessOwnerScreen(),
@@ -88,9 +85,7 @@ class RoleSelectionScreen extends StatelessWidget {
 
                 const SizedBox(height: 25),
 
-                /// ADMIN
-                _buildRoleButton(
-                  context,
+                HoverRoleButton(
                   title: "Admin",
                   icon: Icons.admin_panel_settings_rounded,
                   screen: const AdminScreen(),
@@ -102,50 +97,87 @@ class RoleSelectionScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// GLASS BUTTON WIDGET (Mobile App style)
-  Widget _buildRoleButton(
-      BuildContext context,
-      {required String title,
-        required IconData icon,
-        required Widget screen}) {
+/// ----------------------
+/// Reusable Hover Button
+/// ----------------------
+/// This is a StatefulWidget so hover state persists correctly.
+/// On hover it shows a smooth scale + glow animation.
+/// When cursor leaves the button it returns to normal (button DOES NOT disappear).
+class HoverRoleButton extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final Widget screen;
 
-    return GestureDetector(
-      onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (_) => screen)),
+  const HoverRoleButton({
+    Key? key,
+    required this.title,
+    required this.icon,
+    required this.screen,
+  }) : super(key: key);
 
-      child: Container(
+  @override
+  State<HoverRoleButton> createState() => _HoverRoleButtonState();
+}
+
+class _HoverRoleButtonState extends State<HoverRoleButton> {
+  bool isHovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Wrap with MouseRegion to detect hover (works on web/desktop)
+    return MouseRegion(
+      onEnter: (_) => setState(() => isHovering = true),
+      onExit: (_) => setState(() => isHovering = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         width: 280,
         height: 70,
+        curve: Curves.easeOut,
+        transform: isHovering
+            ? (Matrix4.identity()..scale(1.04))
+            : Matrix4.identity(),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.12),
+          color: isHovering
+              ? Colors.white.withOpacity(0.20)
+              : Colors.white.withOpacity(0.12),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withOpacity(0.25)),
+          border: Border.all(
+            color: Colors.white.withOpacity(isHovering ? 0.30 : 0.25),
+            width: isHovering ? 2 : 1,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.35),
-              blurRadius: 12,
+              color: Colors.black.withOpacity(isHovering ? 0.45 : 0.30),
+              blurRadius: isHovering ? 18 : 12,
               offset: const Offset(0, 6),
             ),
           ],
         ),
-
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 30, color: Colors.white),
-              const SizedBox(width: 14),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                  letterSpacing: 0.5,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => widget.screen),
+          ),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(widget.icon, size: 30, color: Colors.white),
+                const SizedBox(width: 14),
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.5,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
