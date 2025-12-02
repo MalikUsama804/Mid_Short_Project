@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "899937264106",
+    "project_id": "smart-city-link-system-76ec5",
+    "storage_bucket": "smart-city-link-system-76ec5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899937264106:android:d62d908d9184297102d293",
+        "android_client_info": {
+          "package_name": "city_link_system.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA860vVZH-FgisvShcKDnThgHuwcsq050I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

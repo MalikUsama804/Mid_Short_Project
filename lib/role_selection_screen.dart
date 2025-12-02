@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'resident_screen.dart';
 import 'business_owner_screen.dart';
 import 'admin_screen.dart';
+import 'auth_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -23,11 +25,32 @@ class RoleSelectionScreen extends StatelessWidget {
             fontSize: 26,
           ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 28),
+              tooltip: 'Sign Out',
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AuthScreen()),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error signing out: $e')),
+                  );
+                }
+              }, // sign out
+            ),
+          ),
+        ],
       ),
 
       body: Stack(
         children: [
-          /// 🌆 BACKGROUND IMAGE
           SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -35,9 +58,8 @@ class RoleSelectionScreen extends StatelessWidget {
               "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=900&q=80",
               fit: BoxFit.cover,
             ),
-          ),
+          ), // background image
 
-          /// DARK GRADIENT OVERLAY
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -49,9 +71,8 @@ class RoleSelectionScreen extends StatelessWidget {
                 end: Alignment.topCenter,
               ),
             ),
-          ),
+          ), // dark overlay
 
-          /// CONTENT
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -68,7 +89,6 @@ class RoleSelectionScreen extends StatelessWidget {
 
                 const SizedBox(height: 45),
 
-                // <-- USE HoverRoleButton INSTEAD OF OLD _buildRoleButton -->
                 HoverRoleButton(
                   title: "Resident",
                   icon: Icons.person_rounded,
@@ -92,19 +112,13 @@ class RoleSelectionScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ), // role buttons
         ],
       ),
     );
   }
 }
 
-/// ----------------------
-/// Reusable Hover Button
-/// ----------------------
-/// This is a StatefulWidget so hover state persists correctly.
-/// On hover it shows a smooth scale + glow animation.
-/// When cursor leaves the button it returns to normal (button DOES NOT disappear).
 class HoverRoleButton extends StatefulWidget {
   final String title;
   final IconData icon;
@@ -126,7 +140,6 @@ class _HoverRoleButtonState extends State<HoverRoleButton> {
 
   @override
   Widget build(BuildContext context) {
-    // Wrap with MouseRegion to detect hover (works on web/desktop)
     return MouseRegion(
       onEnter: (_) => setState(() => isHovering = true),
       onExit: (_) => setState(() => isHovering = false),
@@ -135,13 +148,9 @@ class _HoverRoleButtonState extends State<HoverRoleButton> {
         width: 280,
         height: 70,
         curve: Curves.easeOut,
-        transform: isHovering
-            ? (Matrix4.identity()..scale(1.04))
-            : Matrix4.identity(),
+        transform: isHovering ? (Matrix4.identity()..scale(1.04)) : Matrix4.identity(),
         decoration: BoxDecoration(
-          color: isHovering
-              ? Colors.white.withOpacity(0.20)
-              : Colors.white.withOpacity(0.12),
+          color: isHovering ? Colors.white.withOpacity(0.20) : Colors.white.withOpacity(0.12),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: Colors.white.withOpacity(isHovering ? 0.30 : 0.25),
