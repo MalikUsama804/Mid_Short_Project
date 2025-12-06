@@ -1,9 +1,3 @@
-// Updated Auth Screen with:
-// ✔ Different background image
-// ✔ Removed username from signup
-// ✔ Only bottom white line in input fields
-// ✔ Clean slide animation remains
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'role_selection_screen.dart';
@@ -85,6 +79,7 @@ class _AuthScreenState extends State<AuthScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       body: Stack(
         children: [
           /// NEW DIFFERENT BACKGROUND

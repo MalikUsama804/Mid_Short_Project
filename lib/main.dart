@@ -7,10 +7,10 @@ void main() async {
 
   await Firebase.initializeApp(
     options: const FirebaseOptions(
-      apiKey: "AIzaSyA860vVZH-FgisvShcKDnThgHuwcsq050I",
-      appId: "1:899937264106:android:d62d908d9184297102d293",
-      messagingSenderId: "899937264106",
-      projectId: "smart-city-link-system-76ec5",
+      apiKey: "AIzaSyDxccBiyGHSfNcohTh38YOj-q8EAZ4iX9w",
+      appId: "1:1020138806326:android:5bba37607793ff6fffcc97",
+      messagingSenderId: "1020138806326",
+      projectId: "citylinksystem",
     ),
   );
 
