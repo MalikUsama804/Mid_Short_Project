@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'resident_screen.dart';
-import 'business_owner_screen.dart';
-import 'admin_screen.dart';
+import 'admin_dashboard_screen.dart'; // IMPORT DIRECT
 import 'auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../models/user_model.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
-  const RoleSelectionScreen({super.key});
+  final AppUser userProfile;
+
+  const RoleSelectionScreen({super.key, required this.userProfile});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -28,27 +29,41 @@ class RoleSelectionScreen extends StatelessWidget {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: IconButton(
-              icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 28),
-              tooltip: 'Sign Out',
-              onPressed: () async {
-                try {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AuthScreen()),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error signing out: $e')),
-                  );
+            child: PopupMenuButton<String>(
+              icon: const Icon(Icons.account_circle, color: Colors.white, size: 32),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'profile',
+                  child: Row(
+                    children: const [
+                      Icon(Icons.person, color: Colors.green),
+                      SizedBox(width: 10),
+                      Text('My Profile'),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Row(
+                    children: const [
+                      Icon(Icons.logout, color: Colors.red),
+                      SizedBox(width: 10),
+                      Text('Sign Out'),
+                    ],
+                  ),
+                ),
+              ],
+              onSelected: (value) {
+                if (value == 'logout') {
+                  _signOut(context);
+                } else if (value == 'profile') {
+                  // Navigate to profile screen
                 }
-              }, // sign out
+              },
             ),
           ),
         ],
       ),
-
       body: Stack(
         children: [
           SizedBox(
@@ -58,8 +73,7 @@ class RoleSelectionScreen extends StatelessWidget {
               "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=900&q=80",
               fit: BoxFit.cover,
             ),
-          ), // background image
-
+          ),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -71,12 +85,37 @@ class RoleSelectionScreen extends StatelessWidget {
                 end: Alignment.topCenter,
               ),
             ),
-          ), // dark overlay
-
+          ),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  child: const Icon(
+                    Icons.person,
+                    size: 50,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  userProfile.name,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  userProfile.email,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ),
+                const SizedBox(height: 30),
                 const Text(
                   "Select Your Role",
                   style: TextStyle(
@@ -86,36 +125,48 @@ class RoleSelectionScreen extends StatelessWidget {
                     letterSpacing: 1,
                   ),
                 ),
-
                 const SizedBox(height: 45),
 
+                // RESIDENT BUTTON
                 HoverRoleButton(
                   title: "Resident",
                   icon: Icons.person_rounded,
-                  screen: const ResidentScreen(),
+                  screen: ResidentScreen(userProfile: userProfile),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 25), // SPACING
 
-                HoverRoleButton(
-                  title: "Business Owner",
-                  icon: Icons.store_rounded,
-                  screen: const BusinessOwnerScreen(),
-                ),
-
-                const SizedBox(height: 25),
-
+                // ADMIN BUTTON - DIRECT LINK TO AdminDashboardScreen
                 HoverRoleButton(
                   title: "Admin",
                   icon: Icons.admin_panel_settings_rounded,
-                  screen: const AdminScreen(),
+                  screen: AdminDashboardScreen(adminProfile: userProfile), // DIRECT LINK
                 ),
+
+                const SizedBox(height: 25), // SPACING
+
+                // BUSINESS OWNER BUTTON
+
               ],
             ),
-          ), // role buttons
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const AuthScreen()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error signing out: $e')),
+      );
+    }
   }
 }
 
