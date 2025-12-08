@@ -4,7 +4,7 @@ import 'package:flutter/services.dart'; // یہ import شامل کریں
 import '../models/user_model.dart';
 import 'profile_screen.dart';
 import 'resident_complaints_screen.dart';
-//import 'announcements_screen.dart';
+import 'announcements_screen.dart';
 import 'parking_screen.dart';
 import 'business_owner_screen.dart';
 import 'notifications_screen.dart';
@@ -211,17 +211,10 @@ class ResidentScreen extends StatelessWidget {
                     title: 'Announcements',
                     icon: Icons.announcement_rounded,
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Coming Soon'),
-                          content: const Text('Emergency Contacts feature will be added in the next update.'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('OK'),
-                            ),
-                          ],
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>AnnouncementsScreen(userProfile: userProfile),
                         ),
                       );
                     },
