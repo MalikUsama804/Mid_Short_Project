@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../models/user_model.dart';
 
 class BusinessOwnerScreen extends StatefulWidget {
@@ -17,7 +18,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _products = [];
 
-  // Categories for food items
   final List<String> categories = [
     'All',
     'Fast Food',
@@ -28,7 +28,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
     'Breakfast'
   ];
 
-  // FIXED: Using Flutter local images or placeholder icons
   final List<Map<String, dynamic>> allProducts = [
     {
       'id': '1',
@@ -185,93 +184,100 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF2ECC71), Color(0xFF27AE60)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).padding.top + 90,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF2ECC71), Color(0xFF27AE60)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
             ),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                left: 16,
+                right: 16,
+              ),
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: () => Navigator.pop(context),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.25),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.arrow_back_ios_new,
+                          color: Colors.white, size: 20),
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Welcome ${widget.userProfile.name} 👋",
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        const Text('Food & Restaurant',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 1)),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      isCardView ? Icons.view_list : Icons.grid_view_rounded,
+                      color: Colors.white,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isCardView = !isCardView;
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 10),
+                  const Icon(Icons.notifications_active_rounded,
+                      color: Colors.white, size: 26),
+                  const SizedBox(width: 14),
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Colors.white,
+                    child: Icon(Icons.person, color: Colors.green, size: 22),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        toolbarHeight: 90,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            InkWell(
-              onTap: () => Navigator.pop(context),
-              borderRadius: BorderRadius.circular(50),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.25),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.arrow_back_ios_new,
-                    color: Colors.white, size: 20),
-              ),
-            ),
-            const SizedBox(width: 15),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Welcome ${widget.userProfile.name} 👋",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text('Food & Restaurant',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 1)),
-              ],
-            ),
-            const Spacer(),
-            IconButton(
-              icon: Icon(
-                isCardView ? Icons.view_list : Icons.grid_view_rounded,
-                color: Colors.white,
-                size: 30,
-              ),
-              onPressed: () {
-                setState(() {
-                  isCardView = !isCardView;
-                });
-              },
-            ),
-            const SizedBox(width: 10),
-            const Icon(Icons.notifications_active_rounded,
-                color: Colors.white, size: 26),
-            const SizedBox(width: 14),
-            const CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.white,
-              child: Icon(Icons.person, color: Colors.green, size: 26),
-            ),
-          ],
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: Container(
               height: 45,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
@@ -303,71 +309,70 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
               ),
             ),
           ),
-        ),
-      ),
-      body: Column(
-        children: [
-          // Category Filter Chips
-          SizedBox(
-            height: 60,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(category),
-                    selected: selectedCategory == category,
-                    selectedColor: Colors.green,
-                    labelStyle: TextStyle(
-                      color: selectedCategory == category
-                          ? Colors.white
-                          : Colors.black,
-                    ),
-                    onSelected: (selected) {
-                      _filterByCategory(category);
+          Expanded(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 60,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: Text(category),
+                          selected: selectedCategory == category,
+                          selectedColor: Colors.green,
+                          labelStyle: TextStyle(
+                            color: selectedCategory == category
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                          onSelected: (selected) {
+                            _filterByCategory(category);
+                          },
+                        ),
+                      );
                     },
                   ),
-                );
-              },
+                ),
+                Expanded(
+                  child: _products.isEmpty
+                      ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.fastfood,
+                          size: 80,
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No items found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try searching for something else',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                      : isCardView ? _buildGridView() : _buildListView(),
+                ),
+              ],
             ),
-          ),
-
-          // Products Grid/List
-          Expanded(
-            child: _products.isEmpty
-                ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.fastfood,
-                    size: 80,
-                    color: Colors.grey.withOpacity(0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No items found',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Try searching for something else',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            )
-                : isCardView ? _buildGridView() : _buildListView(),
           ),
         ],
       ),
@@ -423,7 +428,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
       padding: const EdgeInsets.all(12),
       child: Row(
         children: [
-          // Product Icon instead of Image
           Container(
             width: 80,
             height: 80,
@@ -438,8 +442,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
             ),
           ),
           const SizedBox(width: 12),
-
-          // Product Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,7 +511,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product Icon Box
           Expanded(
             child: Container(
               width: double.infinity,
@@ -526,7 +527,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
                     color: Colors.green,
                   ),
                   const SizedBox(height: 8),
-                  // Price Tag inside the box
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 4),
@@ -554,8 +554,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Product Name
           Text(
             product['name'],
             style: const TextStyle(
@@ -565,8 +563,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-
-          // Category
           Text(
             product['category'],
             style: TextStyle(
@@ -574,10 +570,7 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
               color: Colors.grey.shade600,
             ),
           ),
-
           const SizedBox(height: 8),
-
-          // Availability
           Row(
             children: [
               Container(
@@ -598,7 +591,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
                 ),
               ),
               const Spacer(),
-              // Add to cart button
               IconButton(
                 onPressed: product['available'] ? () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -638,7 +630,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
           ),
           child: Column(
             children: [
-              // Header with close button
               Container(
                 padding: const EdgeInsets.all(16),
                 child: Row(
@@ -658,8 +649,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
                   ],
                 ),
               ),
-
-              // Icon and Name
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -697,17 +686,13 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
                   ],
                 ),
               ),
-
               Divider(color: Colors.grey.shade300),
-
-              // Details
               Expanded(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Category and Availability
                       Row(
                         children: [
                           Container(
@@ -748,10 +733,7 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 24),
-
-                      // Description
                       const Text(
                         'Description',
                         style: TextStyle(
@@ -772,8 +754,6 @@ class _BusinessOwnerScreenState extends State<BusinessOwnerScreen> {
                   ),
                 ),
               ),
-
-              // Add to Cart Button
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: SizedBox(

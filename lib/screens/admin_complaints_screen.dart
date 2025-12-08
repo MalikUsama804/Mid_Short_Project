@@ -18,60 +18,102 @@ class _AdminComplaintsScreenState extends State<AdminComplaintsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Complaints'),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () {
-              _showFilterDialog(context);
-            },
-          ),
-        ],
-      ),
-      body: StreamBuilder<List<Complaint>>(
-        stream: _firebaseService.getAllComplaints(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          final complaints = snapshot.data ?? [];
-
-          if (complaints.isEmpty) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).padding.top + kToolbarHeight,
+            color: Colors.red,
+            child: Padding(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                left: 16,
+                right: 16,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Icon(Icons.report_off, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text('No complaints yet'),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () => Navigator.pop(context),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.25),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.arrow_back_ios_new,
+                              color: Colors.white, size: 20),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      const Text(
+                        'Manage Complaints',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.filter_list, color: Colors.white),
+                    onPressed: () {
+                      _showFilterDialog(context);
+                    },
+                  ),
                 ],
               ),
-            );
-          }
+            ),
+          ),
+          Expanded(
+            child: StreamBuilder<List<Complaint>>(
+              stream: _firebaseService.getAllComplaints(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: complaints.length,
-            itemBuilder: (context, index) {
-              final complaint = complaints[index];
-              return ComplaintCardAdmin(
-                complaint: complaint,
-                onUpdate: () {
-                  setState(() {});
-                },
-                adminProfile: widget.adminProfile,
-              );
-            },
-          );
-        },
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                final complaints = snapshot.data ?? [];
+
+                if (complaints.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.report_off, size: 64, color: Colors.grey),
+                        SizedBox(height: 16),
+                        Text('No complaints yet'),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: complaints.length,
+                  itemBuilder: (context, index) {
+                    final complaint = complaints[index];
+                    return ComplaintCardAdmin(
+                      complaint: complaint,
+                      onUpdate: () {
+                        setState(() {});
+                      },
+                      adminProfile: widget.adminProfile,
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -161,6 +203,7 @@ class ComplaintCardAdmin extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Title and Status
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -171,10 +214,16 @@ class ComplaintCardAdmin extends StatelessWidget {
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Chip(
-                  label: Text(complaint.status.toUpperCase()),
+                  label: Text(
+                    complaint.status.toUpperCase(),
+                    style: const TextStyle(fontSize: 11),
+                  ),
                   backgroundColor: statusColor.withOpacity(0.2),
                   labelStyle: TextStyle(
                     color: statusColor,
@@ -183,39 +232,74 @@ class ComplaintCardAdmin extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 8),
+
+            // Description
             Text(
               complaint.description,
               style: TextStyle(color: Colors.grey[700]),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
+
             const SizedBox(height: 12),
-            Row(
+
+            // Resident Info - FIXED: Use Expanded to prevent overflow
+            Column(
               children: [
-                const Icon(Icons.person, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(complaint.residentName),
-                const SizedBox(width: 16),
-                const Icon(Icons.email, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(complaint.residentEmail),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.category, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(complaint.category),
-                const Spacer(),
-                const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(
-                  '${complaint.date.day}/${complaint.date.month}/${complaint.date.year}',
+                Row(
+                  children: [
+                    const Icon(Icons.person, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        complaint.residentName,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Icon(Icons.email, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        complaint.residentEmail,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                Row(
+                  children: [
+                    const Icon(Icons.category, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        complaint.category,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const Spacer(),
+                    const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${complaint.date.day}/${complaint.date.month}/${complaint.date.year}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
               ],
             ),
+
             const SizedBox(height: 12),
-            Row(
+
+            // Action Buttons - FIXED: Use Wrap for better layout
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 if (complaint.status != 'resolved')
                   ElevatedButton.icon(
@@ -233,16 +317,26 @@ class ComplaintCardAdmin extends StatelessWidget {
                       ),
                     ),
                   ),
-                const Spacer(),
-                Text(
-                  'Complaint ID: ${complaint.id.substring(0, 8)}...',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
+
+                // Complaint ID
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    'ID: ${complaint.id.substring(0, 8)}...',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ],
             ),
+
+            // Admin Response
             if (complaint.adminResponse != null) ...[
               const SizedBox(height: 12),
               const Divider(),
@@ -252,10 +346,16 @@ class ComplaintCardAdmin extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.green,
+                  fontSize: 14,
                 ),
               ),
               const SizedBox(height: 4),
-              Text(complaint.adminResponse!),
+              Text(
+                complaint.adminResponse!,
+                style: const TextStyle(fontSize: 13),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ],
         ),

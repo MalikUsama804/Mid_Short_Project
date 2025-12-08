@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import 'admin_complaints_screen.dart';
 import 'admin_users_screen.dart';
 import 'admin_notifications_screen.dart';
 import 'admin_parking_screen.dart';
+import '../screens/auth_screen.dart'; // Add this import
 
 class AdminDashboardScreen extends StatefulWidget {
   final AppUser adminProfile;
@@ -15,6 +17,28 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _logout() async {
+    try {
+      await _auth.signOut();
+
+      // Navigate to login screen and remove all previous screens
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthScreen()),
+            (route) => false,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Logout failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,9 +127,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 ),
                               ),
                               const PopupMenuDivider(),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'logout',
-                                child: Row(
+                                onTap: _logout, // Directly call logout function
+                                child: const Row(
                                   children: [
                                     Icon(Icons.logout_outlined, color: Colors.red, size: 20),
                                     SizedBox(width: 12),
@@ -114,11 +139,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 ),
                               ),
                             ],
-                            onSelected: (value) {
-                              if (value == 'logout') {
-                                Navigator.pop(context);
-                              }
-                            },
                           ),
                         ],
                       ),

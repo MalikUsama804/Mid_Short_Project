@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'resident_screen.dart';
-import 'admin_dashboard_screen.dart'; // IMPORT DIRECT
 import 'auth_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/user_model.dart';
@@ -116,37 +115,24 @@ class RoleSelectionScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 30),
-                const Text(
-                  "Select Your Role",
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    letterSpacing: 1,
-                  ),
-                ),
-                const SizedBox(height: 45),
 
-                // RESIDENT BUTTON
+                // RESIDENT BUTTON (Removed "Select Your Role" text)
                 HoverRoleButton(
                   title: "Resident",
                   icon: Icons.person_rounded,
                   screen: ResidentScreen(userProfile: userProfile),
                 ),
 
-                const SizedBox(height: 25), // SPACING
+                const SizedBox(height: 25),
 
-                // ADMIN BUTTON - DIRECT LINK TO AdminDashboardScreen
+                // BUSINESS OWNER BUTTON (if needed)
+                /*
                 HoverRoleButton(
-                  title: "Admin",
-                  icon: Icons.admin_panel_settings_rounded,
-                  screen: AdminDashboardScreen(adminProfile: userProfile), // DIRECT LINK
+                  title: "Business Owner",
+                  icon: Icons.business_rounded,
+                  screen: BusinessOwnerScreen(userProfile: userProfile),
                 ),
-
-                const SizedBox(height: 25), // SPACING
-
-                // BUSINESS OWNER BUTTON
-
+                */
               ],
             ),
           ),

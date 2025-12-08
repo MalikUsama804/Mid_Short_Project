@@ -253,7 +253,7 @@ class FirebaseService {
     return await ref.getDownloadURL();
   }
 
-  // Add this method to your FirebaseService class
+  // Get all parking requests (for admin)
   Stream<List<Map<String, dynamic>>> getAllParkingRequests() {
     return firestore
         .collection('parking_requests')
@@ -263,5 +263,40 @@ class FirebaseService {
       data['id'] = doc.id;
       return data;
     }).toList());
+  }
+
+  // ========== ADMIN MANAGEMENT ==========
+  Future<void> createAdminUser(AppUser adminUser) async {
+    await _firestore
+        .collection('users')
+        .doc(adminUser.uid)
+        .set(adminUser.toMap());
+  }
+
+  // Check if user is admin
+  Future<bool> isAdmin(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        final data = doc.data()!;
+        final role = data['role'] ?? 'resident';
+        final email = data['email'] ?? '';
+
+        // Check if role is admin or email contains admin keyword
+        return role == 'admin' ||
+            email.endsWith('@admin.citylink') ||
+            email.contains('admin');
+      }
+      return false;
+    } catch (e) {
+      print('Error checking admin status: $e');
+      return false;
+    }
+  }
+
+  // Verify admin access code
+  Future<bool> verifyAdminCode(String code) async {
+    // For now, use a hardcoded code. Later you can fetch from Firestore
+    return code == "ADMIN123";
   }
 }

@@ -5,15 +5,28 @@ import 'screens/auth_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyDxccBiyGHSfNcohTh38YOj-q8EAZ4iX9w",
-      appId: "1:1020138806326:android:5bba37607793ff6fffcc97",
-      messagingSenderId: "1020138806326",
-      projectId: "citylinksystem",
-      storageBucket: "citylinksystem.appspot.com",
-    ),
-  );
+  // Initialize Firebase only once
+  try {
+    // Check if Firebase is already initialized (important for hot restart)
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: "AIzaSyDxccBiyGHSfNcohTh38YOj-q8EAZ4iX9w",
+          appId: "1:1020138806326:android:5bba37607793ff6fffcc97",
+          messagingSenderId: "1020138806326",
+          projectId: "citylinksystem",
+          storageBucket: "citylinksystem.appspot.com",
+        ),
+      );
+      print("✅ Firebase initialized successfully");
+    } else {
+      // Use existing instance
+      Firebase.app();
+      print("✅ Firebase already initialized, using existing instance");
+    }
+  } catch (e) {
+    print("❌ Firebase initialization error: $e");
+  }
 
   runApp(const CityLinkApp());
 }
